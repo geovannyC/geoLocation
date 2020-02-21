@@ -5,7 +5,6 @@ import DialogInput from 'react-native-dialog-input';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import enviarData from '../until/sendLoc'
-let coordenadas;
 export default class Localizacion extends Component {
     constructor(props){
         super(props)
@@ -20,9 +19,35 @@ export default class Localizacion extends Component {
         this.capturar = this.capturar.bind(this)
         this._getLocationAsync = this._getLocationAsync.bind(this)
     }
- 
+    datosPersistente=async(x)=>{
+      try { 
+        await AsyncStorage.setItem ('data', x);
+         
+      } catch (error) { 
+        // Error al recuperar los datos 
+        console.log (error.message); 
+      } 
+    }
+    getDatosPersistente=async()=>{ 
+      let data = ''; 
+      try { 
+        data = await AsyncStorage.getItem ('data').then( res => console.log(res))
+        console.log(data)
+      } catch (error) { 
+        // Error al recuperar los datos 
+        console.log (error.message); 
+      }
+      return longitud; 
+    }
+    deleteDatos=async()=>{
+      try {
+        await AsyncStorage.removeItem('data').then(res => console.log('data eliminada'));
+      } catch (error) {
+        // Error retrieving data
+        console.log(error.message);
+      }
+    }
 
- 
   
   componentDidMount=async()=>{
         
@@ -36,7 +61,7 @@ export default class Localizacion extends Component {
        }
 
 
-    usuario=async(x)=>{
+  usuario=async(x)=>{
         await this.setState({
           usuario: x,
           isDialogVisible: false,
@@ -52,6 +77,7 @@ export default class Localizacion extends Component {
 
       setInterval( () => {
         this._getLocationAsync();
+        
     },2000);
        
     }
@@ -87,6 +113,10 @@ enviar(){
       fecha: this.state.fecha,
     })
     enviarData(data, url)
+    this.datosPersistente(data)
+    this.getDatosPersistente()
+    this.deleteDatos()
+    
 }
   render() {
     
